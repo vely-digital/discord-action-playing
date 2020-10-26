@@ -38,7 +38,11 @@ app.get("/", (req, res) => {
   </text>
   <text fill="#ffffff" x="55%" y="75%" alignment-baseline="middle" text-anchor="middle" font-size="20"
     font-family="Verdana" font-weight="bold" class="caption">
-    ${getUser(process.env.USERID).activities[0].name}
+    ${
+      getUser(process.env.USERID).activities[0].name
+        ? getUser(process.env.USERID).activities[0].name
+        : "Nothing"
+    }
   </text>
 </svg>`);
 });
