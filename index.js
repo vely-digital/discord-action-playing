@@ -8,6 +8,7 @@ const port = process.env.PORT || 3000;
 app.set("view engine", "ejs");
 
 app.get("/", (req, res) => {
+  res.setHeader("Cache-Control", `public, max-age=200`);
   res.setHeader("Content-Type", "image/svg+xml; charset=utf-8");
   res.send(`<svg height="100px" width="400px" fill="none"
   xmlns="http://www.w3.org/2000/svg">
