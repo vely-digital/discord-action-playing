@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 const express = require("express");
 const app = express();
-const port = 3000;
+const port = 5000;
 
 app.set("view engine", "ejs");
 
