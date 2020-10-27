@@ -7,10 +7,22 @@ const port = process.env.PORT || 3000;
 
 app.set("view engine", "ejs");
 
-app.get("/", (req, res) => {
-  const user = getUser(process.env.USERID);
+app.get("/", async (req, res) => {
+  const user = await getUser(process.env.USERID);
 
   console.log(user);
+
+  let text = "Offline";
+
+  if (user && user.status == "offline") {
+    text = "Offline";
+  } else {
+    if (user && user.activities[0]) {
+      text = user.activities[0].name;
+    } else {
+      text = "Nothing";
+    }
+  }
 
   res.setHeader(
     "Cache-Control",
@@ -42,7 +54,7 @@ app.get("/", (req, res) => {
   </text>
   <text fill="#ffffff" x="55%" y="75%" alignment-baseline="middle" text-anchor="middle" font-size="20"
     font-family="Verdana" font-weight="bold" class="caption">
-    ${user && user.activities[0] ? user.activities[0].name : "Nothing"}
+    ${text}
   </text>
 </svg>`);
 });
@@ -54,19 +66,28 @@ app.listen(port, () => {
 const dotenv = require("dotenv");
 dotenv.config();
 
-client.once("ready", () => {});
+client.once("ready", () => {
+  console.log("ready");
+});
 
-const getUser = (discordUserId) => {
-  const list = client.guilds.cache.get(process.env.GUILDID);
-  let userPresence = undefined;
-  // console.log(list.members.cache);
+const getUser = async (discordUserId) => {
+  // const list = client.guilds.cache.get(process.env.GUILDID);
+  // let userPresence = undefined;
+  // // console.log(list.members.cache);
 
-  list.members.cache.forEach((member) => {
-    console.log(member.presence);
-    if (member.presence.userID == discordUserId) userPresence = member.presence;
-  });
+  // list.members.cache.forEach((member) => {
+  //   console.log(member.presence);
+  //   if (member.presence.userID == discordUserId) userPresence = member.presence;
+  // });
 
-  return userPresence;
+  const list2 = await client.guilds.fetch(process.env.GUILDID);
+
+  console.log("list2", list2);
+
+  const members2 = await list2.members.fetch(discordUserId);
+  console.log("members2", members2.presence.activities);
+
+  return members2.presence;
 };
 
 client.login(process.env.DISCORDTOKEN);
