@@ -8,6 +8,10 @@ const port = process.env.PORT || 3000;
 app.set("view engine", "ejs");
 
 app.get("/", (req, res) => {
+  const user = getUser(process.env.USERID);
+
+  console.log(user);
+
   res.setHeader(
     "Cache-Control",
     `private, no-cache, no-store, must-revalidate, max-age=-200`
@@ -38,11 +42,7 @@ app.get("/", (req, res) => {
   </text>
   <text fill="#ffffff" x="55%" y="75%" alignment-baseline="middle" text-anchor="middle" font-size="20"
     font-family="Verdana" font-weight="bold" class="caption">
-    ${
-      getUser(process.env.USERID)?.activities[0]
-        ? getUser(process.env.USERID).activities[0].name
-        : "Nothing"
-    }
+    ${user && user.activities[0] ? user.activities[0].name : "Nothing"}
   </text>
 </svg>`);
 });
@@ -59,8 +59,10 @@ client.once("ready", () => {});
 const getUser = (discordUserId) => {
   const list = client.guilds.cache.get(process.env.GUILDID);
   let userPresence = undefined;
+  // console.log(list.members.cache);
 
   list.members.cache.forEach((member) => {
+    console.log(member.presence);
     if (member.presence.userID == discordUserId) userPresence = member.presence;
   });
 
